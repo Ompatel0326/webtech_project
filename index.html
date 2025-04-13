@@ -14,6 +14,9 @@
     <nav class="navbar">
         <div class="container">
             <a href="#" class="logo">Wealth Spectrum</a>
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span class="hamburger"></span>
+            </button>
             <div class="nav-links">
                 <a href="#hero">Home</a>
                 <a href="#about">About</a>
@@ -27,8 +30,16 @@
         </div>
     </nav>
 
+    <div id="systemNotification" class="system-notification" style="display: none;">
+        <div class="notification-content">
+            <span class="warning-icon">⚠️</span>
+            <p>System Notice: Important updates available.</p>
+        </div>
+        <button class="close-notification" onclick="closeNotification()">×</button>
+    </div>
+
     <!-- Hero Section -->
-    <section id="hero">
+    <section id="hero" style="background-image: url('images/hero-bg.jpg')">
         <div class="container">
             <h1>Welcome to Wealth Spectrum</h1>
             <p>Your trusted partner in wealth management and investment solutions</p>
@@ -42,6 +53,9 @@
     <!-- About Section -->
     <section id="about">
         <div class="container">
+            <div class="about-image">
+                <img src="images/about-bg.jpg" alt="About Wealth Spectrum">
+            </div>
             <h2>About Us</h2>
             <div class="mission-vision">
                 <div class="mission">
@@ -57,17 +71,17 @@
                 <h3>Our Team</h3>
                 <div class="team-grid">
                     <div class="team-member">
-                        <img src="images/team1.jpg" alt="Team Member">
+                        <img src="images/team1.jpg" alt="John Doe - CEO">
                         <h4>John Doe</h4>
                         <p>CEO & Founder</p>
                     </div>
                     <div class="team-member">
-                        <img src="images/team2.jpg" alt="Team Member">
+                        <img src="images/team2.jpg" alt="Jane Smith - Investment Director">
                         <h4>Jane Smith</h4>
                         <p>Investment Director</p>
                     </div>
                     <div class="team-member">
-                        <img src="images/team3.jpg" alt="Team Member">
+                        <img src="images/team3.jpg" alt="Mike Johnson - Risk Analyst">
                         <h4>Mike Johnson</h4>
                         <p>Risk Analyst</p>
                     </div>
@@ -82,18 +96,22 @@
             <h2>Our Services</h2>
             <div class="services-grid">
                 <div class="service-card">
+                    <img src="images/service1.jpg" alt="Portfolio Management">
                     <h3>Portfolio Management</h3>
                     <p>Expert management of your investment portfolio</p>
                 </div>
                 <div class="service-card">
+                    <img src="images/service2.jpg" alt="Risk Analysis">
                     <h3>Risk Analysis</h3>
                     <p>Comprehensive risk assessment and management</p>
                 </div>
                 <div class="service-card">
+                    <img src="images/service3.jpg" alt="Investment Planning">
                     <h3>Investment Planning</h3>
                     <p>Strategic planning for your financial future</p>
                 </div>
                 <div class="service-card">
+                    <img src="images/service4.jpg" alt="Market Insights">
                     <h3>Market Insights</h3>
                     <p>In-depth market analysis and trends</p>
                 </div>
@@ -103,6 +121,9 @@
 
     <!-- Client Dashboard Section -->
     <section id="dashboard" class="hidden">
+        <div class="dashboard-header">
+            <img src="images/dashboard-bg.jpg" alt="Dashboard Background">
+        </div>
         <div class="container">
             <h2>Client Dashboard</h2>
             <div class="dashboard-grid">

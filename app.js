@@ -9,15 +9,8 @@ function initMap() {
 }
 
 // Firebase Configuration
-firebase.initializeApp({
-    apiKey: "AIzaSyAHRbmM4c4dGBEyhnLUKeYKvQ8PzGiLRHE",
-    authDomain: "webtechprotfolio.firebaseapp.com",
-    projectId: "webtechprotfolio",
-    storageBucket: "webtechprotfolio.appspot.com",
-    messagingSenderId: "982055173674",
-    appId: "1:982055173674:web:ab32e58071a8c91020cd53",
-    measurementId: "G-4654MZB1C0"
-});
+import { firebaseConfig } from './config.js';
+firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 
@@ -153,29 +146,63 @@ function initCharts() {
 async function updateCharts(userId) {
     try {
         const response = await fetch(`/api/portfolio/${userId}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
 
-        // Update existing charts with real data
-        // ...existing chart initialization code...
+        // Update portfolio chart
+        const portfolioChart = Chart.getChart('portfolioChart');
+        if (portfolioChart) {
+            portfolioChart.data.datasets[0].data = data.portfolioData;
+            portfolioChart.update();
+        }
+
+        // Update performance chart
+        const performanceChart = Chart.getChart('performanceChart');
+        if (performanceChart) {
+            performanceChart.data.datasets[0].data = data.performanceData;
+            performanceChart.update();
+        }
     } catch (error) {
         console.error('Failed to load portfolio data:', error);
+        document.getElementById('systemNotification').innerHTML =
+            `Error loading portfolio data. Please try again later. (${error.message})`;
+        document.getElementById('systemNotification').style.display = 'block';
     }
 }
 
-// Authentication State Observer
-auth.onAuthStateChanged(user => {
-    const loginBtn = document.getElementById('loginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const dashboardSection = document.getElementById('dashboard');
+// Notification Dismissal
+function closeNotification() {
+    document.getElementById('systemNotification').style.display = 'none';
+}
 
-    if (user) {
-        loginBtn.style.display = 'none';
-        logoutBtn.style.display = 'block';
-        dashboardSection?.classList.remove('hidden');
-    } else {
-        loginBtn.style.display = 'block';
-        logoutBtn.style.display = 'none';
-        dashboardSection?.classList.add('hidden');
+// Authentication State Observer with enhanced error handling
+auth.onAuthStateChanged(user => {
+    try {
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const dashboardSection = document.getElementById('dashboard');
+
+        if (!loginBtn || !logoutBtn) {
+            throw new Error('Required UI elements not found');
+        }
+
+        if (user) {
+            loginBtn.style.display = 'none';
+            logoutBtn.style.display = 'block';
+            dashboardSection?.classList.remove('hidden');
+            updateCharts(user.uid).catch(console.error);
+        } else {
+            loginBtn.style.display = 'block';
+            logoutBtn.style.display = 'none';
+            dashboardSection?.classList.add('hidden');
+        }
+    } catch (error) {
+        console.error('Auth state handling error:', error);
+        document.getElementById('systemNotification').innerHTML =
+            `Authentication error. Please refresh the page. (${error.message})`;
+        document.getElementById('systemNotification').style.display = 'block';
     }
 });
 
