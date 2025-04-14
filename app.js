@@ -45,6 +45,11 @@ if (!firebase.apps.length) {
     }).catch(() => {
         showNotification('Working offline', 'warning');
     });
+
+    // Initialize Google Auth Provider
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
+    googleProvider.addScope('profile');
+    googleProvider.addScope('email');
 }
 
 const auth = firebase.auth();
@@ -137,6 +142,66 @@ document.getElementById('registerForm')?.addEventListener('submit', async (e) =>
         setTimeout(() => window.location.href = 'index.html', 1500);
     } catch (error) {
         showNotification(getErrorMessage(error.code), 'error');
+    }
+});
+
+// Google Sign In Function
+async function signInWithGoogle() {
+    try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.addScope('profile');
+        provider.addScope('email');
+        provider.setCustomParameters({
+            prompt: 'select_account'
+        });
+
+        // Use redirect instead of popup
+        await auth.signInWithRedirect(provider);
+    } catch (error) {
+        console.error('Google Sign In Error:', error);
+        showNotification('Error signing in with Google: ' + error.message, 'error');
+    }
+}
+
+// Handle redirect result
+auth.getRedirectResult().then(async (result) => {
+    if (result.user) {
+        try {
+            // Check if user exists in Firestore
+            const userDoc = await db.collection('users').doc(result.user.uid).get();
+
+            if (!userDoc.exists) {
+                // Create new user document
+                await db.collection('users').doc(result.user.uid).set({
+                    fullName: result.user.displayName,
+                    email: result.user.email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    photoURL: result.user.photoURL,
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } else {
+                // Update last login
+                await db.collection('users').doc(result.user.uid).update({
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+
+            // Store user data in localStorage
+            localStorage.setItem('userName', result.user.displayName);
+            localStorage.setItem('userEmail', result.user.email);
+            localStorage.setItem('userId', result.user.uid);
+
+            showNotification('Successfully signed in with Google!', 'success');
+            setTimeout(() => window.location.href = 'index.html', 1500);
+        } catch (error) {
+            console.error('Error handling redirect result:', error);
+            showNotification('Error completing sign-in', 'error');
+        }
+    }
+}).catch((error) => {
+    if (error.code !== 'auth/credential-already-in-use') {
+        console.error('Redirect Error:', error);
+        showNotification('Error signing in with Google: ' + error.message, 'error');
     }
 });
 
