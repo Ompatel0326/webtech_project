@@ -23,6 +23,7 @@
                 <a href="#services">Services</a>
                 <a href="#contact">Contact</a>
                 <div class="auth-buttons">
+                    <span id="userNameDisplay" class="user-name"></span>
                     <button id="loginBtn" class="btn" onclick="window.location.href='login.html'">Login</button>
                     <button id="logoutBtn" class="btn" onclick="logout()" style="display: none;">Logout</button>
                 </div>
@@ -176,10 +177,11 @@
     <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
 
     <!-- Google Maps -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXX1HXj6oq9JexrBYyMBTnzA9GuZ4qf8k&callback=initMap"
-        async defer></script>
+    <script async src="https://maps.googleapis.com/maps/api/js?key=YOUR_ACTUAL_API_KEY&callback=initMap">
+    </script>
 
     <script src="app.js"></script>
 </body>

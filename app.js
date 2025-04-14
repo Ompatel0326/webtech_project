@@ -8,7 +8,7 @@ function initMap() {
     new google.maps.Marker({ position: location, map: map });
 }
 
-// Firebase Configuration
+// Firebase Configuration and Initialization
 const firebaseConfig = {
     apiKey: "AIzaSyAHRbmM4c4dGBEyhnLUKeYKvQ8PzGiLRHE",
     authDomain: "webtechprotfolio.firebaseapp.com",
@@ -19,8 +19,36 @@ const firebaseConfig = {
     measurementId: "G-4654MZB1C0"
 };
 
-firebase.initializeApp(firebaseConfig);
+// Initialize Firebase only if it hasn't been initialized
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+
+    // Initialize Firestore with settings
+    const db = firebase.firestore();
+    db.settings({
+        cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
+    });
+
+    // Enable offline persistence
+    db.enablePersistence({ synchronizeTabs: true })
+        .catch((err) => {
+            if (err.code == 'failed-precondition') {
+                showNotification('Multiple tabs open, offline mode limited', 'warning');
+            } else if (err.code == 'unimplemented') {
+                showNotification('Offline mode not available', 'warning');
+            }
+        });
+
+    // Monitor connection state
+    firebase.firestore().enableNetwork().then(() => {
+        showNotification('Connected to server', 'success');
+    }).catch(() => {
+        showNotification('Working offline', 'warning');
+    });
+}
+
 const auth = firebase.auth();
+const db = firebase.firestore();
 
 // Updated Login/Register Functions
 function showRegister() {
@@ -41,7 +69,7 @@ function showLogin() {
     }
 }
 
-// Updated Form Event Listeners
+// Updated Login Form Handler
 document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = e.target.querySelector('input[type="email"]').value;
@@ -50,7 +78,24 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
     try {
         const userCredential = await auth.signInWithEmailAndPassword(email, password);
         if (userCredential.user) {
-            showNotification('Login successful!', 'success');
+            const userDoc = await db.collection('users').doc(userCredential.user.uid).get();
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                localStorage.setItem('userName', userData.fullName);
+                showNotification(`Welcome back, ${userData.fullName}!`, 'success');
+
+                // Update navbar immediately
+                const userNameDisplay = document.getElementById('userNameDisplay');
+                const loginBtn = document.getElementById('loginBtn');
+                const logoutBtn = document.getElementById('logoutBtn');
+
+                if (userNameDisplay) {
+                    userNameDisplay.textContent = userData.fullName;
+                    userNameDisplay.style.display = 'block';
+                }
+                if (loginBtn) loginBtn.style.display = 'none';
+                if (logoutBtn) logoutBtn.style.display = 'block';
+            }
             setTimeout(() => window.location.href = 'index.html', 1500);
         }
     } catch (error) {
@@ -60,9 +105,10 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
 
 document.getElementById('registerForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = e.target.querySelector('input[type="email"]').value;
-    const password = e.target.querySelector('input[type="password"]').value;
-    const confirmPassword = e.target.querySelectorAll('input[type="password"]')[1].value;
+    const email = e.target.querySelector('#email').value;
+    const password = e.target.querySelector('#password').value;
+    const confirmPassword = e.target.querySelector('#confirmPassword').value;
+    const fullName = e.target.querySelector('#fullName').value;
 
     if (password !== confirmPassword) {
         showNotification('Passwords do not match!', 'error');
@@ -70,11 +116,18 @@ document.getElementById('registerForm')?.addEventListener('submit', async (e) =>
     }
 
     try {
+        // Create user account
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        if (userCredential.user) {
-            showNotification('Registration successful!', 'success');
-            setTimeout(() => window.location.href = 'index.html', 1500);
-        }
+
+        // Store additional user data in Firestore
+        await db.collection('users').doc(userCredential.user.uid).set({
+            fullName: fullName,
+            email: email,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        showNotification('Registration successful!', 'success');
+        setTimeout(() => window.location.href = 'index.html', 1500);
     } catch (error) {
         showNotification(getErrorMessage(error.code), 'error');
     }
@@ -137,29 +190,28 @@ function registerTab() {
     document.getElementById('btn').style.left = '110px';
 }
 
-// Enhanced Form Handling
-document.getElementById('contactForm').addEventListener('submit', async function (e) {
+// Contact Form Handler
+document.getElementById('contactForm')?.addEventListener('submit', async function (e) {
     e.preventDefault();
     const form = e.target;
-    const formData = new FormData(form);
+    const name = form.querySelector('input[type="text"]').value;
+    const email = form.querySelector('input[type="email"]').value;
+    const message = form.querySelector('textarea').value;
 
     try {
-        const response = await fetch('/api/contact', {
-            method: 'POST',
-            body: JSON.stringify(Object.fromEntries(formData)),
-            headers: {
-                'Content-Type': 'application/json'
-            }
+        // Store message in Firestore
+        await db.collection('contact_messages').add({
+            name: name,
+            email: email,
+            message: message,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        if (response.ok) {
-            alert('Message sent successfully!');
-            form.reset();
-        } else {
-            throw new Error('Failed to send message');
-        }
+        showNotification('Message sent successfully!', 'success');
+        form.reset();
     } catch (error) {
-        alert('Error sending message: ' + error.message);
+        console.error('Error sending message:', error);
+        showNotification('Error sending message. Please try again.', 'error');
     }
 });
 
@@ -170,32 +222,45 @@ navToggle?.addEventListener('click', () => {
 });
 
 // Dashboard Charts
+let portfolioChartInstance = null;
+let performanceChartInstance = null;
+
 function initCharts() {
-    const portfolioCtx = document.getElementById('portfolioChart').getContext('2d');
-    const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+    const portfolioChart = document.getElementById('portfolioChart');
+    const performanceChart = document.getElementById('performanceChart');
 
-    new Chart(portfolioCtx, {
-        type: 'pie',
-        data: {
-            labels: ['Stocks', 'Bonds', 'Real Estate', 'Cash'],
-            datasets: [{
-                data: [40, 30, 20, 10],
-                backgroundColor: ['#2ecc71', '#3498db', '#e74c3c', '#f1c40f']
-            }]
-        }
-    });
+    // Only initialize charts if elements exist
+    if (portfolioChart && performanceChart) {
+        // Destroy existing chart instances if they exist
+        if (portfolioChartInstance) portfolioChartInstance.destroy();
+        if (performanceChartInstance) performanceChartInstance.destroy();
 
-    new Chart(performanceCtx, {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            datasets: [{
-                label: 'Portfolio Performance',
-                data: [10, 15, 13, 18, 20, 22],
-                borderColor: '#2ecc71'
-            }]
-        }
-    });
+        const portfolioCtx = portfolioChart.getContext('2d');
+        const performanceCtx = performanceChart.getContext('2d');
+
+        portfolioChartInstance = new Chart(portfolioCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Stocks', 'Bonds', 'Real Estate', 'Cash'],
+                datasets: [{
+                    data: [40, 30, 20, 10],
+                    backgroundColor: ['#2ecc71', '#3498db', '#e74c3c', '#f1c40f']
+                }]
+            }
+        });
+
+        performanceChartInstance = new Chart(performanceCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Portfolio Performance',
+                    data: [10, 15, 13, 18, 20, 22],
+                    borderColor: '#2ecc71'
+                }]
+            }
+        });
+    }
 }
 
 // Update Charts with Real Data
@@ -207,24 +272,18 @@ async function updateCharts(userId) {
         }
         const data = await response.json();
 
-        // Update portfolio chart
-        const portfolioChart = Chart.getChart('portfolioChart');
-        if (portfolioChart) {
-            portfolioChart.data.datasets[0].data = data.portfolioData;
-            portfolioChart.update();
+        if (portfolioChartInstance) {
+            portfolioChartInstance.data.datasets[0].data = data.portfolioData;
+            portfolioChartInstance.update();
         }
 
-        // Update performance chart
-        const performanceChart = Chart.getChart('performanceChart');
-        if (performanceChart) {
-            performanceChart.data.datasets[0].data = data.performanceData;
-            performanceChart.update();
+        if (performanceChartInstance) {
+            performanceChartInstance.data.datasets[0].data = data.performanceData;
+            performanceChartInstance.update();
         }
     } catch (error) {
         console.error('Failed to load portfolio data:', error);
-        document.getElementById('systemNotification').innerHTML =
-            `Error loading portfolio data. Please try again later. (${error.message})`;
-        document.getElementById('systemNotification').style.display = 'block';
+        showNotification('Error loading portfolio data', 'error');
     }
 }
 
@@ -233,32 +292,66 @@ function closeNotification() {
     document.getElementById('systemNotification').style.display = 'none';
 }
 
-// Authentication State Observer with enhanced error handling
+// Show Dashboard Function
+function showDashboard(user) {
+    const dashboardSection = document.getElementById('dashboard');
+    if (dashboardSection) {
+        dashboardSection.classList.remove('hidden');
+        initCharts();
+
+        // Fetch and display user data
+        db.collection('users').doc(user.uid).get().then((doc) => {
+            if (doc.exists) {
+                const userData = doc.data();
+                const userNameDisplay = document.getElementById('userNameDisplay');
+                if (userNameDisplay) {
+                    userNameDisplay.textContent = `Welcome, ${userData.fullName}`;
+                    userNameDisplay.style.display = 'block';
+                    // Store user name in localStorage for persistence
+                    localStorage.setItem('userName', userData.fullName);
+                }
+            }
+        }).catch((error) => {
+            console.error('Error fetching user data:', error);
+            showNotification('Error loading user data', 'error');
+        });
+    }
+}
+
+// Updated Authentication State Observer
 auth.onAuthStateChanged(user => {
     try {
         const loginBtn = document.getElementById('loginBtn');
         const logoutBtn = document.getElementById('logoutBtn');
         const dashboardSection = document.getElementById('dashboard');
-
-        if (!loginBtn || !logoutBtn) {
-            throw new Error('Required UI elements not found');
-        }
+        const userNameDisplay = document.getElementById('userNameDisplay');
 
         if (user) {
-            loginBtn.style.display = 'none';
-            logoutBtn.style.display = 'block';
-            dashboardSection?.classList.remove('hidden');
-            updateCharts(user.uid).catch(console.error);
+            // Get user data from Firestore
+            db.collection('users').doc(user.uid).get().then((doc) => {
+                if (doc.exists) {
+                    const userData = doc.data();
+                    // Update navbar elements
+                    if (loginBtn) loginBtn.style.display = 'none';
+                    if (logoutBtn) logoutBtn.style.display = 'block';
+                    if (userNameDisplay) {
+                        userNameDisplay.textContent = userData.fullName; // Show only the name without "Welcome"
+                        userNameDisplay.style.display = 'block';
+                    }
+                    if (dashboardSection) dashboardSection.classList.remove('hidden');
+                }
+            });
         } else {
-            loginBtn.style.display = 'block';
-            logoutBtn.style.display = 'none';
-            dashboardSection?.classList.add('hidden');
+            // User is signed out
+            if (loginBtn) loginBtn.style.display = 'block';
+            if (logoutBtn) logoutBtn.style.display = 'none';
+            if (userNameDisplay) userNameDisplay.style.display = 'none';
+            if (dashboardSection) dashboardSection.classList.add('hidden');
+            localStorage.removeItem('userName'); // Clear stored user data
         }
     } catch (error) {
         console.error('Auth state handling error:', error);
-        document.getElementById('systemNotification').innerHTML =
-            `Authentication error. Please refresh the page. (${error.message})`;
-        document.getElementById('systemNotification').style.display = 'block';
+        showNotification('Error updating authentication state', 'error');
     }
 });
 
@@ -273,7 +366,11 @@ function logout() {
 
 // Initialize features when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    initCharts();
+    // Check if user is logged in and on dashboard page
+    const dashboardSection = document.getElementById('dashboard');
+    if (dashboardSection && !dashboardSection.classList.contains('hidden')) {
+        initCharts();
+    }
 
     // Check authentication state
     auth.onAuthStateChanged(user => {

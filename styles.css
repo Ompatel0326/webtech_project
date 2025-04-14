@@ -233,6 +233,7 @@ body {
 
 .auth-buttons {
     display: flex;
+    align-items: center;
     gap: 1rem;
     margin-left: 2rem;
 }
@@ -578,4 +579,36 @@ body {
 img {
     max-width: 100%;
     height: auto;
+}
+
+/* Username Display */
+.user-name {
+    color: var(--primary-color);
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    margin-right: 1rem;
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 4px;
+    display: none;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .user-name {
+        margin: 10px 0;
+        text-align: center;
+        width: 100%;
+    }
 }
