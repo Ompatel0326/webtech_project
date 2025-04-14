@@ -81,20 +81,13 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
             const userDoc = await db.collection('users').doc(userCredential.user.uid).get();
             if (userDoc.exists) {
                 const userData = userDoc.data();
+                // Store user data in localStorage
                 localStorage.setItem('userName', userData.fullName);
+                localStorage.setItem('userEmail', userData.email);
+                localStorage.setItem('userId', userCredential.user.uid);
+
+                updateUserDisplay(userData);
                 showNotification(`Welcome back, ${userData.fullName}!`, 'success');
-
-                // Update navbar immediately
-                const userNameDisplay = document.getElementById('userNameDisplay');
-                const loginBtn = document.getElementById('loginBtn');
-                const logoutBtn = document.getElementById('logoutBtn');
-
-                if (userNameDisplay) {
-                    userNameDisplay.textContent = userData.fullName;
-                    userNameDisplay.style.display = 'block';
-                }
-                if (loginBtn) loginBtn.style.display = 'none';
-                if (logoutBtn) logoutBtn.style.display = 'block';
             }
             setTimeout(() => window.location.href = 'index.html', 1500);
         }
@@ -102,6 +95,20 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
         showNotification(getErrorMessage(error.code), 'error');
     }
 });
+
+// New function to update user display
+function updateUserDisplay(userData) {
+    const userNameDisplay = document.getElementById('userNameDisplay');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (userNameDisplay) {
+        userNameDisplay.textContent = userData.fullName;
+        userNameDisplay.style.display = 'block';
+    }
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'block';
+}
 
 document.getElementById('registerForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -318,42 +325,293 @@ function showDashboard(user) {
     }
 }
 
+// Updated Show User Profile Modal
+function closeModal() {
+    const modal = document.getElementById('userProfileModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function showUserProfile(userData) {
+    if (!userData) return;
+    closeModal();
+
+    try {
+        const joinDate = userData.createdAt ? new Date(userData.createdAt.toDate()).toLocaleDateString() : 'N/A';
+        const lastLogin = auth.currentUser?.metadata.lastSignInTime
+            ? new Date(auth.currentUser.metadata.lastSignInTime).toLocaleDateString()
+            : 'N/A';
+
+        const modalHtml = `
+            <div class="modal-overlay" id="userProfileModal">
+                <div class="modal">
+                    <div class="modal-header">
+                        <h3 class="modal-title">User Profile</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="user-detail">
+                            <strong>Name:</strong> <span id="modalUserName">${userData.fullName || 'N/A'}</span>
+                        </div>
+                        <div class="user-detail">
+                            <strong>Email:</strong> <span id="modalUserEmail">${userData.email || 'N/A'}</span>
+                        </div>
+                        <div class="user-detail">
+                            <strong>Member Since:</strong> <span>${joinDate}</span>
+                        </div>
+                        <div class="user-detail">
+                            <strong>Last Login:</strong> <span>${lastLogin}</span>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="modal-btn primary" onclick="showChangePasswordModal()">Change Password</button>
+                        <button class="modal-btn secondary" onclick="showEditProfileModal('${userData.fullName}')">Edit Profile</button>
+                        <button class="modal-btn danger" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        const modal = document.getElementById('userProfileModal');
+        modal.style.display = 'flex';
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+    } catch (error) {
+        console.error('Error showing profile:', error);
+        showNotification('Error displaying profile', 'error');
+    }
+}
+
+// Add Edit Profile Function
+function showEditProfileModal() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const currentModal = document.getElementById('userProfileModal');
+    const userName = document.getElementById('modalUserName').textContent;
+
+    const editModalHtml = `
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Profile</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="editFullName" value="${userName}" class="form-control">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn primary" onclick="updateProfile()">Save Changes</button>
+                <button class="modal-btn secondary" onclick="showUserProfile()">Cancel</button>
+            </div>
+        </div>
+    `;
+
+    if (currentModal) {
+        currentModal.innerHTML = editModalHtml;
+    }
+}
+
+// Add Update Profile Function
+async function updateProfile() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const newName = document.getElementById('editFullName').value;
+
+    try {
+        await db.collection('users').doc(user.uid).update({
+            fullName: newName,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Update display name in authentication
+        await user.updateProfile({
+            displayName: newName
+        });
+
+        // Update localStorage
+        localStorage.setItem('userName', newName);
+
+        // Update UI
+        const userNameDisplay = document.getElementById('userNameDisplay');
+        if (userNameDisplay) {
+            userNameDisplay.textContent = newName;
+        }
+
+        showNotification('Profile updated successfully!', 'success');
+
+        // Refresh user profile modal
+        const userData = (await db.collection('users').doc(user.uid).get()).data();
+        showUserProfile(userData);
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        showNotification('Error updating profile', 'error');
+    }
+}
+
+// Update click handler for username
+document.addEventListener('click', function (e) {
+    const userNameDisplay = document.getElementById('userNameDisplay');
+    if (userNameDisplay && userNameDisplay.contains(e.target)) {
+        const user = auth.currentUser;
+        if (user) {
+            db.collection('users').doc(user.uid).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        userData.uid = user.uid; // Add user ID to userData
+                        showUserProfile(userData);
+                    } else {
+                        throw new Error('User profile not found');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching user profile:', error);
+                    showNotification('Error loading profile: ' + error.message, 'error');
+                });
+        } else {
+            showNotification('Please log in to view profile', 'error');
+        }
+    }
+});
+
 // Updated Authentication State Observer
 auth.onAuthStateChanged(user => {
     try {
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const dashboardSection = document.getElementById('dashboard');
-        const userNameDisplay = document.getElementById('userNameDisplay');
-
         if (user) {
-            // Get user data from Firestore
-            db.collection('users').doc(user.uid).get().then((doc) => {
-                if (doc.exists) {
-                    const userData = doc.data();
-                    // Update navbar elements
-                    if (loginBtn) loginBtn.style.display = 'none';
-                    if (logoutBtn) logoutBtn.style.display = 'block';
-                    if (userNameDisplay) {
-                        userNameDisplay.textContent = userData.fullName; // Show only the name without "Welcome"
-                        userNameDisplay.style.display = 'block';
+            // First try to get data from localStorage for immediate display
+            const cachedName = localStorage.getItem('userName');
+            if (cachedName) {
+                updateUserDisplay({ fullName: cachedName });
+            }
+
+            // Then fetch fresh data from Firestore
+            db.collection('users').doc(user.uid).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        updateUserDisplay(userData);
+                        // Update cache
+                        localStorage.setItem('userName', userData.fullName);
+                        localStorage.setItem('userEmail', userData.email);
+                        localStorage.setItem('userId', user.uid);
                     }
-                    if (dashboardSection) dashboardSection.classList.remove('hidden');
-                }
-            });
+                })
+                .catch((error) => {
+                    console.error('Error fetching user data:', error);
+                    showNotification('Error loading user data', 'error');
+                });
         } else {
-            // User is signed out
+            // Clear all user data on logout
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userId');
+
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const dashboardSection = document.getElementById('dashboard');
+
             if (loginBtn) loginBtn.style.display = 'block';
             if (logoutBtn) logoutBtn.style.display = 'none';
             if (userNameDisplay) userNameDisplay.style.display = 'none';
             if (dashboardSection) dashboardSection.classList.add('hidden');
-            localStorage.removeItem('userName'); // Clear stored user data
         }
     } catch (error) {
         console.error('Auth state handling error:', error);
         showNotification('Error updating authentication state', 'error');
     }
 });
+
+// Add Change Password Function
+function showChangePasswordModal() {
+    closeModal(); // Close the profile modal first
+
+    const modalHtml = `
+        <div class="modal-overlay" id="passwordModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">Change Password</h3>
+                    <button class="modal-close" onclick="closePasswordModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Current Password</label>
+                        <input type="password" id="currentPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" id="newPassword" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn primary" onclick="updatePassword()">Update Password</button>
+                    <button class="modal-btn secondary" onclick="closePasswordModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    const modal = document.getElementById('passwordModal');
+    modal.style.display = 'flex';
+}
+
+function closePasswordModal() {
+    const modal = document.getElementById('passwordModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+async function updatePassword() {
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const user = auth.currentUser;
+
+    if (!user || !currentPassword || !newPassword) {
+        showNotification('Please fill in all fields', 'error');
+        return;
+    }
+
+    try {
+        // Get user email
+        const userEmail = user.email;
+
+        // Create credential
+        const credential = firebase.auth.EmailAuthProvider.credential(
+            userEmail,
+            currentPassword
+        );
+
+        // Re-authenticate user
+        await user.reauthenticateWithCredential(credential);
+
+        // Update password
+        await user.updatePassword(newPassword);
+
+        showNotification('Password updated successfully!', 'success');
+        closePasswordModal();
+
+        // Show profile modal again
+        const userData = (await db.collection('users').doc(user.uid).get()).data();
+        showUserProfile(userData);
+    } catch (error) {
+        console.error('Error updating password:', error);
+        if (error.code === 'auth/wrong-password') {
+            showNotification('Current password is incorrect', 'error');
+        } else {
+            showNotification('Error updating password: ' + error.message, 'error');
+        }
+    }
+}
 
 // Logout Function
 function logout() {
