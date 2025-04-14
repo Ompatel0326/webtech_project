@@ -9,23 +9,107 @@ function initMap() {
 }
 
 // Firebase Configuration
-import { firebaseConfig } from './config.js';
-firebase.initializeApp(firebaseConfig);
+const firebaseConfig = {
+    apiKey: "AIzaSyAHRbmM4c4dGBEyhnLUKeYKvQ8PzGiLRHE",
+    authDomain: "webtechprotfolio.firebaseapp.com",
+    projectId: "webtechprotfolio",
+    storageBucket: "webtechprotfolio.appspot.com",
+    messagingSenderId: "982055173674",
+    appId: "1:982055173674:web:ab32e58071a8c91020cd53",
+    measurementId: "G-4654MZB1C0"
+};
 
+firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-function login() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-        .then((result) => {
-            showDashboard(result.user);
-        })
-        .catch((error) => console.error(error));
+// Updated Login/Register Functions
+function showRegister() {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    if (loginForm && registerForm) {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+    }
 }
 
-function showDashboard(user) {
-    document.getElementById('dashboard').classList.remove('hidden');
-    updateCharts(user.uid);
+function showLogin() {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    if (loginForm && registerForm) {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+    }
+}
+
+// Updated Form Event Listeners
+document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = e.target.querySelector('input[type="email"]').value;
+    const password = e.target.querySelector('input[type="password"]').value;
+
+    try {
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        if (userCredential.user) {
+            showNotification('Login successful!', 'success');
+            setTimeout(() => window.location.href = 'index.html', 1500);
+        }
+    } catch (error) {
+        showNotification(getErrorMessage(error.code), 'error');
+    }
+});
+
+document.getElementById('registerForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = e.target.querySelector('input[type="email"]').value;
+    const password = e.target.querySelector('input[type="password"]').value;
+    const confirmPassword = e.target.querySelectorAll('input[type="password"]')[1].value;
+
+    if (password !== confirmPassword) {
+        showNotification('Passwords do not match!', 'error');
+        return;
+    }
+
+    try {
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        if (userCredential.user) {
+            showNotification('Registration successful!', 'success');
+            setTimeout(() => window.location.href = 'index.html', 1500);
+        }
+    } catch (error) {
+        showNotification(getErrorMessage(error.code), 'error');
+    }
+});
+
+// Error Message Handler
+function getErrorMessage(errorCode) {
+    switch (errorCode) {
+        case 'auth/email-already-in-use':
+            return 'This email is already registered.';
+        case 'auth/invalid-email':
+            return 'Please enter a valid email address.';
+        case 'auth/weak-password':
+            return 'Password should be at least 6 characters.';
+        case 'auth/user-not-found':
+            return 'No account found with this email.';
+        case 'auth/wrong-password':
+            return 'Incorrect password.';
+        default:
+            return 'An error occurred. Please try again.';
+    }
+}
+
+// Enhanced Notification System
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <span>${message}</span>
+            <button onclick="this.parentElement.parentElement.remove()">×</button>
+        </div>
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 5000);
 }
 
 // Login Page Functions
@@ -41,44 +125,16 @@ function login() {
     document.getElementById('btn').style.left = '0';
 }
 
-// Firebase Authentication Handlers
-document.getElementById('login')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
+function loginTab() {
+    document.getElementById('loginForm').style.left = '0';
+    document.getElementById('registerForm').style.left = '450px';
+    document.getElementById('btn').style.left = '0';
+}
 
-    try {
-        await auth.signInWithEmailAndPassword(email, password);
-        window.location.href = 'index.html';
-    } catch (error) {
-        alert('Login Error: ' + error.message);
-    }
-});
-
-document.getElementById('register')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('signupEmail').value;
-    const password = document.getElementById('signupPassword').value;
-    const name = document.getElementById('signupName').value;
-
-    try {
-        const result = await auth.createUserWithEmailAndPassword(email, password);
-        await result.user.updateProfile({ displayName: name });
-        window.location.href = 'index.html';
-    } catch (error) {
-        alert('Registration Error: ' + error.message);
-    }
-});
-
-function googleSignIn() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-        .then(() => {
-            window.location.href = 'index.html';
-        })
-        .catch(error => {
-            alert('Google Sign-in Error: ' + error.message);
-        });
+function registerTab() {
+    document.getElementById('loginForm').style.left = '-450px';
+    document.getElementById('registerForm').style.left = '0';
+    document.getElementById('btn').style.left = '110px';
 }
 
 // Enhanced Form Handling
