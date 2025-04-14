@@ -7,6 +7,7 @@
     <title>Wealth Spectrum - Investment Management</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="app.js" defer></script>
 </head>
 
@@ -27,155 +28,195 @@
                         <span id="userNameDisplay" class="user-name"></span>
                         <div class="dropdown-menu"></div>
                     </div>
-                    <button id="loginBtn" class="btn" onclick="window.location.href='login.html'">Login</button>
-                    <button id="logoutBtn" class="btn" onclick="logout()" style="display: none;">Logout</button>
+                    <div class="auth-options">
+                        <button id="loginBtn" class="btn login-btn" onclick="window.location.href='login.html'">
+                            <i class="fas fa-user"></i> Login
+                        </button>
+                        <button id="googleSignInBtn" class="btn google-signin-btn" onclick="signInWithGoogle()">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                            Sign in with Google
+                        </button>
+                        <button id="logoutBtn" class="btn logout-btn" onclick="logout()" style="display: none;">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <div id="systemNotification" class="system-notification" style="display: none;">
-        <div class="notification-content">
-            <span class="warning-icon">⚠️</span>
-            <p>System Notice: Important updates available.</p>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+        <span>Menu</span>
+    </button>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-chart-line"></i> Wealth Spectrum</h3>
+            <button class="sidebar-close" onclick="toggleSidebar()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <button class="close-notification" onclick="closeNotification()">×</button>
+        <div class="sidebar-content">
+            <ul class="sidebar-menu">
+                <li><a href="#hero"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#about"><i class="fas fa-info-circle"></i> About</a></li>
+                <li><a href="#services"><i class="fas fa-cogs"></i> Services</a></li>
+                <li><a href="#contact"><i class="fas fa-envelope"></i> Contact</a></li>
+                <li id="dashboardLink" style="display: none;">
+                    <a href="#dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                </li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <div id="sidebarUserInfo"></div>
+        </div>
     </div>
 
-    <!-- Hero Section -->
-    <section id="hero" style="background-image: url('images/hero-bg.jpg')">
-        <div class="container">
-            <h1>Welcome to Wealth Spectrum</h1>
-            <p>Your trusted partner in wealth management and investment solutions</p>
-            <div class="cta-buttons">
-                <a href="#" class="btn primary">Get Started</a>
-                <a href="#" class="btn secondary">View Portfolio</a>
+    <div class="main-content">
+        <div id="systemNotification" class="system-notification" style="display: none;">
+            <div class="notification-content">
+                <span class="warning-icon">⚠️</span>
+                <p>System Notice: Important updates available.</p>
             </div>
+            <button class="close-notification" onclick="closeNotification()">×</button>
         </div>
-    </section>
 
-    <!-- About Section -->
-    <section id="about">
-        <div class="container">
-            <div class="about-image">
-                <img src="images/about-bg.jpg" alt="About Wealth Spectrum">
-            </div>
-            <h2>About Us</h2>
-            <div class="mission-vision">
-                <div class="mission">
-                    <h3>Our Mission</h3>
-                    <p>To empower investors with innovative financial solutions and expert guidance.</p>
-                </div>
-                <div class="vision">
-                    <h3>Our Vision</h3>
-                    <p>To be the leading wealth management platform, creating sustainable financial growth.</p>
+        <!-- Hero Section -->
+        <section id="hero" style="background-image: url('images/hero-bg.jpg')">
+            <div class="container">
+                <h1>Welcome to Wealth Spectrum</h1>
+                <p>Your trusted partner in wealth management and investment solutions</p>
+                <div class="cta-buttons">
+                    <a href="#" class="btn primary">Get Started</a>
+                    <a href="#" class="btn secondary">View Portfolio</a>
                 </div>
             </div>
-            <div class="team">
-                <h3>Our Team</h3>
-                <div class="team-grid">
-                    <div class="team-member">
-                        <img src="images/team1.jpg" alt="John Doe - CEO">
-                        <h4>John Doe</h4>
-                        <p>CEO & Founder</p>
-                    </div>
-                    <div class="team-member">
-                        <img src="images/team2.jpg" alt="Jane Smith - Investment Director">
-                        <h4>Jane Smith</h4>
-                        <p>Investment Director</p>
-                    </div>
-                    <div class="team-member">
-                        <img src="images/team3.jpg" alt="Mike Johnson - Risk Analyst">
-                        <h4>Mike Johnson</h4>
-                        <p>Risk Analyst</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Services Section -->
-    <section id="services">
-        <div class="container">
-            <h2>Our Services</h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <img src="images/service1.jpg" alt="Portfolio Management">
-                    <h3>Portfolio Management</h3>
-                    <p>Expert management of your investment portfolio</p>
+        <!-- About Section -->
+        <section id="about">
+            <div class="container">
+                <div class="about-image">
+                    <img src="images/about-bg.jpg" alt="About Wealth Spectrum">
                 </div>
-                <div class="service-card">
-                    <img src="images/service2.jpg" alt="Risk Analysis">
-                    <h3>Risk Analysis</h3>
-                    <p>Comprehensive risk assessment and management</p>
+                <h2>About Us</h2>
+                <div class="mission-vision">
+                    <div class="mission">
+                        <h3>Our Mission</h3>
+                        <p>To empower investors with innovative financial solutions and expert guidance.</p>
+                    </div>
+                    <div class="vision">
+                        <h3>Our Vision</h3>
+                        <p>To be the leading wealth management platform, creating sustainable financial growth.</p>
+                    </div>
                 </div>
-                <div class="service-card">
-                    <img src="images/service3.jpg" alt="Investment Planning">
-                    <h3>Investment Planning</h3>
-                    <p>Strategic planning for your financial future</p>
-                </div>
-                <div class="service-card">
-                    <img src="images/service4.jpg" alt="Market Insights">
-                    <h3>Market Insights</h3>
-                    <p>In-depth market analysis and trends</p>
+                <div class="team">
+                    <h3>Our Team</h3>
+                    <div class="team-grid">
+                        <div class="team-member">
+                            <img src="images/team1.jpg" alt="John Doe - CEO">
+                            <h4>John Doe</h4>
+                            <p>CEO & Founder</p>
+                        </div>
+                        <div class="team-member">
+                            <img src="images/team2.jpg" alt="Jane Smith - Investment Director">
+                            <h4>Jane Smith</h4>
+                            <p>Investment Director</p>
+                        </div>
+                        <div class="team-member">
+                            <img src="images/team3.jpg" alt="Mike Johnson - Risk Analyst">
+                            <h4>Mike Johnson</h4>
+                            <p>Risk Analyst</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Client Dashboard Section -->
-    <section id="dashboard" class="hidden">
-        <div class="dashboard-header">
-            <img src="images/dashboard-bg.jpg" alt="Dashboard Background">
-        </div>
-        <div class="container">
-            <h2>Client Dashboard</h2>
-            <div class="dashboard-grid">
-                <div class="portfolio-summary">
-                    <h3>Portfolio Overview</h3>
-                    <canvas id="portfolioChart"></canvas>
-                </div>
-                <div class="performance-metrics">
-                    <h3>Performance Metrics</h3>
-                    <canvas id="performanceChart"></canvas>
+        <!-- Services Section -->
+        <section id="services">
+            <div class="container">
+                <h2>Our Services</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <img src="images/service1.jpg" alt="Portfolio Management">
+                        <h3>Portfolio Management</h3>
+                        <p>Expert management of your investment portfolio</p>
+                    </div>
+                    <div class="service-card">
+                        <img src="images/service2.jpg" alt="Risk Analysis">
+                        <h3>Risk Analysis</h3>
+                        <p>Comprehensive risk assessment and management</p>
+                    </div>
+                    <div class="service-card">
+                        <img src="images/service3.jpg" alt="Investment Planning">
+                        <h3>Investment Planning</h3>
+                        <p>Strategic planning for your financial future</p>
+                    </div>
+                    <div class="service-card">
+                        <img src="images/service4.jpg" alt="Market Insights">
+                        <h3>Market Insights</h3>
+                        <p>In-depth market analysis and trends</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Contact Section -->
-    <section id="contact">
-        <div class="container">
-            <h2>Contact Us</h2>
-            <div class="contact-grid">
-                <div class="contact-form">
-                    <form id="contactForm">
-                        <input type="text" placeholder="Name" required>
-                        <input type="email" placeholder="Email" required>
-                        <textarea placeholder="Message" required></textarea>
-                        <button type="submit" class="btn primary">Send Message</button>
-                    </form>
-                </div>
-                <div class="contact-info">
-                    <div class="info-item">
-                        <h4>Address</h4>
-                        <p>123 Financial District, Business Bay</p>
+        <!-- Client Dashboard Section -->
+        <section id="dashboard" class="hidden">
+            <div class="dashboard-header">
+                <img src="images/dashboard-bg.jpg" alt="Dashboard Background">
+            </div>
+            <div class="container">
+                <h2>Client Dashboard</h2>
+                <div class="dashboard-grid">
+                    <div class="portfolio-summary">
+                        <h3>Portfolio Overview</h3>
+                        <canvas id="portfolioChart"></canvas>
                     </div>
-                    <div class="info-item">
-                        <h4>Phone</h4>
-                        <p>+1 234 567 8900</p>
+                    <div class="performance-metrics">
+                        <h3>Performance Metrics</h3>
+                        <canvas id="performanceChart"></canvas>
                     </div>
-                    <div class="info-item">
-                        <h4>Email</h4>
-                        <p>contact@wealthspectrum.com</p>
-                    </div>
-                </div>
-                <div id="map">
-                    <!-- Google Maps will be embedded here -->
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact">
+            <div class="container">
+                <h2>Contact Us</h2>
+                <div class="contact-grid">
+                    <div class="contact-form">
+                        <form id="contactForm">
+                            <input type="text" placeholder="Name" required>
+                            <input type="email" placeholder="Email" required>
+                            <textarea placeholder="Message" required></textarea>
+                            <button type="submit" class="btn primary">Send Message</button>
+                        </form>
+                    </div>
+                    <div class="contact-info">
+                        <div class="info-item">
+                            <h4>Address</h4>
+                            <p>123 Financial District, Business Bay</p>
+                        </div>
+                        <div class="info-item">
+                            <h4>Phone</h4>
+                            <p>+1 234 567 8900</p>
+                        </div>
+                        <div class="info-item">
+                            <h4>Email</h4>
+                            <p>contact@wealthspectrum.com</p>
+                        </div>
+                    </div>
+                    <div id="map">
+                        <!-- Google Maps will be embedded here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 
     <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
@@ -190,4 +231,3 @@
 </body>
 
 </html>
-```

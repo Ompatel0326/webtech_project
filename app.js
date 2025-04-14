@@ -106,12 +106,14 @@ function updateUserDisplay(userData) {
     const userNameDisplay = document.getElementById('userNameDisplay');
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
+    const googleSignInBtn = document.getElementById('googleSignInBtn');
 
     if (userNameDisplay) {
         userNameDisplay.textContent = userData.fullName;
         userNameDisplay.style.display = 'block';
     }
     if (loginBtn) loginBtn.style.display = 'none';
+    if (googleSignInBtn) googleSignInBtn.style.display = 'none';
     if (logoutBtn) logoutBtn.style.display = 'block';
 }
 
@@ -291,6 +293,45 @@ document.getElementById('contactForm')?.addEventListener('submit', async functio
 const navToggle = document.querySelector('.nav-toggle');
 navToggle?.addEventListener('click', () => {
     document.querySelector('.nav-links').classList.toggle('active');
+});
+
+// Sidebar Functions
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.querySelector('.main-content');
+    const menuBtn = document.querySelector('.sidebar-toggle');
+
+    if (!sidebar.classList.contains('active')) {
+        // Opening sidebar
+        sidebar.classList.add('active');
+        mainContent.classList.add('shifted');
+        menuBtn.classList.add('hidden');
+    } else {
+        // Closing sidebar
+        sidebar.classList.remove('active');
+        mainContent.classList.remove('shifted');
+        setTimeout(() => {
+            menuBtn.classList.remove('hidden');
+        }, 300); // Wait for sidebar close animation to finish
+    }
+}
+
+// Handle clicks outside sidebar to close it
+document.addEventListener('click', (e) => {
+    const sidebar = document.getElementById('sidebar');
+    const menuBtn = document.querySelector('.sidebar-toggle');
+
+    if (sidebar.classList.contains('active') &&
+        !sidebar.contains(e.target) &&
+        !menuBtn.contains(e.target)) {
+        toggleSidebar();
+    }
+});
+
+// Initialize the menu button visibility
+document.addEventListener('DOMContentLoaded', () => {
+    const menuBtn = document.querySelector('.sidebar-toggle');
+    menuBtn.classList.remove('hidden');
 });
 
 // Dashboard Charts
@@ -581,18 +622,58 @@ auth.onAuthStateChanged(user => {
 
             const loginBtn = document.getElementById('loginBtn');
             const logoutBtn = document.getElementById('logoutBtn');
+            const googleSignInBtn = document.getElementById('googleSignInBtn');
             const userNameDisplay = document.getElementById('userNameDisplay');
             const dashboardSection = document.getElementById('dashboard');
 
             if (loginBtn) loginBtn.style.display = 'block';
+            if (googleSignInBtn) googleSignInBtn.style.display = 'block';
             if (logoutBtn) logoutBtn.style.display = 'none';
             if (userNameDisplay) userNameDisplay.style.display = 'none';
             if (dashboardSection) dashboardSection.classList.add('hidden');
+        }
+
+        const dashboardLink = document.getElementById('dashboardLink');
+        const sidebarUserInfo = document.getElementById('sidebarUserInfo');
+
+        if (user) {
+            if (dashboardLink) dashboardLink.style.display = 'block';
+            if (sidebarUserInfo) {
+                sidebarUserInfo.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-info-detail">
+                            <strong>Logged in as:</strong>
+                            <p>${localStorage.getItem('userName') || user.email}</p>
+                        </div>
+                        <button class="modal-btn danger" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                `;
+            }
+        } else {
+            if (dashboardLink) dashboardLink.style.display = 'none';
+            if (sidebarUserInfo) {
+                sidebarUserInfo.innerHTML = `
+                    <button class="modal-btn primary" onclick="window.location.href='login.html'">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                `;
+            }
         }
     } catch (error) {
         console.error('Auth state handling error:', error);
         showNotification('Error updating authentication state', 'error');
     }
+});
+
+// Close sidebar when clicking on menu items (mobile)
+document.querySelectorAll('.sidebar-menu a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+            toggleSidebar();
+        }
+    });
 });
 
 // Add Change Password Function
