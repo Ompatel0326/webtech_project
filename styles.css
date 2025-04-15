@@ -37,13 +37,13 @@ body {
     display: flex;
     align-items: center;
     text-align: center;
-    color: white;
+    color: black;
 }
 
 #hero .container {
     max-width: 800px;
     text-align: center;
-    padding: 0 20px;
+    padding: 0 80px;
 }
 
 .cta-buttons {
@@ -72,12 +72,12 @@ body {
 
 .btn.primary {
     background: var(--secondary-color);
-    color: white;
+    color: black;
 }
 
 .btn.secondary {
-    border: 2px solid var(--secondary-color);
-    color: white;
+    border: var(--secondary-color);
+    color: black;
 }
 
 /* Sidebar Styles */
