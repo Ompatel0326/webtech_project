@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="app.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -58,7 +59,7 @@
             </button>
         </div>
         <div class="sidebar-content">
-            <ul class="sidebar-menu">
+            <ul class="sidebar-menu animate-slidein">
                 <li><a href="#hero"><i class="fas fa-home"></i> Home</a></li>
                 <li><a href="#about"><i class="fas fa-info-circle"></i> About</a></li>
                 <li><a href="#services"><i class="fas fa-cogs"></i> Services</a></li>
@@ -67,6 +68,24 @@
                     <a href="#dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
                 </li>
             </ul>
+
+            <div class="features-showcase">
+                <h4 class="animate-fade"><i class="fas fa-star"></i> Featured</h4>
+                <div class="showcase-grid">
+                    <div class="showcase-item animate-popup">
+                        <img src="images/service1.jpg" alt="Service 1" loading="lazy">
+                        <div class="overlay">Portfolio Management</div>
+                    </div>
+                    <div class="showcase-item animate-popup delay-1">
+                        <img src="images/service2.jpg" alt="Service 2" loading="lazy">
+                        <div class="overlay">Risk Analysis</div>
+                    </div>
+                    <div class="showcase-item animate-popup delay-2">
+                        <img src="images/service3.jpg" alt="Service 3" loading="lazy">
+                        <div class="overlay">Investment Planning</div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="sidebar-footer">
             <div id="sidebarUserInfo"></div>
@@ -85,9 +104,9 @@
         <!-- Hero Section -->
         <section id="hero" style="background-image: url('images/hero-bg.jpg')">
             <div class="container">
-                <h1>Welcome to Wealth Spectrum</h1>
-                <p>Your trusted partner in wealth management and investment solutions</p>
-                <div class="cta-buttons">
+                <h1 class="animate-fadeIn">Welcome to <span class="gradient-text">Wealth Spectrum</span></h1>
+                <p class="animate-fadeIn delay-1">Your trusted partner in wealth management and investment solutions</p>
+                <div class="cta-buttons animate-fadeIn delay-2">
                     <a href="#" class="btn primary">Get Started</a>
                     <a href="#" class="btn secondary">View Portfolio</a>
                 </div>
