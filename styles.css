@@ -37,10 +37,8 @@ body {
     display: flex;
     align-items: center;
     text-align: center;
-<<<<<<< HEAD
-    color: black;
-=======
-    color: white;
+    <<<<<<< HEAD color: black;
+    =======color: white;
     background-attachment: fixed;
     position: relative;
 }
@@ -65,7 +63,7 @@ body {
     font-size: 1.2rem;
     margin-bottom: 2rem;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
->>>>>>> 7982f8b30c2989d14525fa6ad45e17db47b58be8
+    >>>>>>>7982f8b30c2989d14525fa6ad45e17db47b58be8
 }
 
 #hero .container {
@@ -120,8 +118,7 @@ body {
 }
 
 .btn.primary {
-<<<<<<< HEAD
-    background-color: #007bff;
+    <<<<<<< HEAD background-color: #007bff;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -137,8 +134,7 @@ body {
 .btn.secondary {
     border: var(--secondary-color);
     color: black;
-=======
-    background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+    =======background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
     color: white;
     box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
 }
@@ -147,7 +143,7 @@ body {
     border: 2px solid var(--secondary-color);
     background: transparent;
     color: white;
->>>>>>> 7982f8b30c2989d14525fa6ad45e17db47b58be8
+    >>>>>>>7982f8b30c2989d14525fa6ad45e17db47b58be8
 }
 
 /* Sidebar Styles */
@@ -157,17 +153,39 @@ body {
     top: 0;
     height: 100vh;
     width: 300px;
-<<<<<<< HEAD
-    background: linear-gradient(135deg, #000108, #26d0ce);
-=======
     background: linear-gradient(135deg, #1a2980, #26d0ce);
     backdrop-filter: blur(10px);
->>>>>>> 7982f8b30c2989d14525fa6ad45e17db47b58be8
-    color: white;
+    >>>>>>>7982f8b30c2989d14525fa6ad45e17db47b58be8 color: white;
     transition: all 0.3s ease;
     z-index: 1200;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
     overflow-y: auto;
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%
+    }
+
+    50% {
+        background-position: 100% 50%
+    }
+
+    100% {
+        background-position: 0% 50%
+    }
+}
+
+.sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIi8+PC9zdmc+');
+    pointer-events: none;
+    opacity: 0.5;
 }
 
 .sidebar.active {
@@ -177,11 +195,13 @@ body {
 .sidebar-header {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 25px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    transform: translateY(-100%);
+    animation: slideDown 0.5s forwards 0.2s;
 }
 
 .sidebar-header h3 {
@@ -212,6 +232,29 @@ body {
 .sidebar-menu li {
     padding: 0;
     margin: 0;
+    transform: translateX(-100%);
+    opacity: 0;
+    animation: slideIn 0.5s forwards;
+}
+
+.sidebar-menu li:nth-child(1) {
+    animation-delay: 0.2s;
+}
+
+.sidebar-menu li:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.sidebar-menu li:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.sidebar-menu li:nth-child(4) {
+    animation-delay: 0.5s;
+}
+
+.sidebar-menu li:nth-child(5) {
+    animation-delay: 0.6s;
 }
 
 .sidebar-menu a {
@@ -225,6 +268,10 @@ body {
     position: relative;
     overflow: hidden;
     z-index: 1;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 5px 15px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .sidebar-menu a::before {
@@ -245,8 +292,9 @@ body {
 }
 
 .sidebar-menu a:hover {
-    transform: translateX(10px);
-    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px) scale(1.02);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar-menu i {
@@ -254,6 +302,7 @@ body {
     text-align: center;
     transition: transform 0.3s ease;
     animation: float 3s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .sidebar-menu a:hover i {
@@ -261,13 +310,15 @@ body {
 }
 
 .sidebar-footer {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
     padding: 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     position: absolute;
     bottom: 0;
     width: 100%;
+    transform: translateY(100%);
+    animation: slideUp 0.5s forwards 0.7s;
 }
 
 .sidebar-toggle {
@@ -275,9 +326,9 @@ body {
     left: 20px;
     top: 20px;
     z-index: 1300;
-    background: var(--secondary-color);
+    background: rgba(52, 152, 219, 0.9);
     color: white;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
@@ -288,6 +339,8 @@ body {
     transition: all 0.3s ease;
     opacity: 1;
     transform: translateX(0);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    animation: pulse 2s infinite;
 }
 
 .sidebar-toggle.hidden {
@@ -297,7 +350,9 @@ body {
 }
 
 .sidebar-toggle:hover {
-    background: var(--primary-color);
+    background: rgba(41, 128, 185, 0.95);
+    transform: translateY(-2px);
+    animation: none;
 }
 
 .main-content {
@@ -306,6 +361,39 @@ body {
 
 .main-content.shifted {
     margin-left: 300px;
+}
+
+@keyframes slideIn {
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideDown {
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 4px 25px rgba(52, 152, 219, 0.4);
+    }
+
+    100% {
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+    }
 }
 
 @media (max-width: 768px) {
@@ -505,7 +593,8 @@ body {
 }
 
 .navbar .logo {
-    margin-right: 20px; /* Add space between the logo and the menu */
+    margin-right: 20px;
+    /* Add space between the logo and the menu */
 }
 
 .logo {
@@ -526,7 +615,8 @@ body {
     display: flex;
     align-items: center;
     gap: 2rem;
-    margin-left: 20px; /* Add space between the menu and the logo */
+    margin-left: 20px;
+    /* Add space between the menu and the logo */
 }
 
 .nav-links a {
@@ -1187,6 +1277,8 @@ img {
     background: #f8f9fa;
     padding: 20px;
     border-bottom: 1px solid #eee;
+    position: relative;
+    overflow: hidden;
 }
 
 .user-info-detail {
@@ -1198,6 +1290,31 @@ img {
 .user-info-detail strong {
     color: #333;
     margin-right: 5px;
+}
+
+.user-info::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(to right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.1) 50%,
+            rgba(255, 255, 255, 0) 100%);
+    transform: rotate(45deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% {
+        transform: translateX(-100%) rotate(45deg);
+    }
+
+    100% {
+        transform: translateX(100%) rotate(45deg);
+    }
 }
 
 /* Social Login */
