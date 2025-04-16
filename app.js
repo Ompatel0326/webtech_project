@@ -1,3 +1,66 @@
+// Add at the beginning of the file
+document.addEventListener('DOMContentLoaded', function () {
+    // Slider functionality
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelector('.slider-dots');
+    const prev = document.querySelector('.prev');
+    const next = document.querySelector('.next');
+    let currentSlide = 0;
+    let slideInterval;
+
+    // Create dots
+    slides.forEach((_, i) => {
+        const dot = document.createElement('div');
+        dot.className = 'dot';
+        if (i === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => goToSlide(i));
+        dots.appendChild(dot);
+    });
+
+    function updateSlides() {
+        slides.forEach(slide => slide.classList.remove('active'));
+        document.querySelectorAll('.dot').forEach(dot => dot.classList.remove('active'));
+
+        slides[currentSlide].classList.add('active');
+        dots.children[currentSlide].classList.add('active');
+    }
+
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        updateSlides();
+    }
+
+    function prevSlide() {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        updateSlides();
+    }
+
+    function goToSlide(index) {
+        currentSlide = index;
+        updateSlides();
+        resetInterval();
+    }
+
+    function resetInterval() {
+        clearInterval(slideInterval);
+        slideInterval = setInterval(nextSlide, 5000);
+    }
+
+    // Event listeners
+    next?.addEventListener('click', () => {
+        nextSlide();
+        resetInterval();
+    });
+
+    prev?.addEventListener('click', () => {
+        prevSlide();
+        resetInterval();
+    });
+
+    // Start automatic sliding
+    resetInterval();
+});
+
 // Google Maps Integration
 function initMap() {
     const location = { lat: 40.7128, lng: -74.0060 }; // New York coordinates
@@ -767,6 +830,48 @@ function logout() {
         console.error('Logout Error:', error);
     });
 }
+
+// Add authentication check function
+function checkAuth() {
+    const user = auth.currentUser;
+    if (!user) {
+        window.location.href = 'login.html';
+        return false;
+    }
+    return true;
+}
+
+// Modify existing event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    const getStartedBtn = document.querySelector('.cta-buttons .primary');
+    if (getStartedBtn) {
+        getStartedBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!checkAuth()) return;
+        });
+    }
+
+    // Lock all service cards behind authentication
+    document.querySelectorAll('.service-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (!checkAuth()) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+    });
+
+    // Check auth state
+    auth.onAuthStateChanged(user => {
+        const mainContent = document.querySelector('.main-content');
+        if (user) {
+            if (mainContent) mainContent.style.display = 'block';
+            showDashboard(user);
+        } else {
+            if (mainContent) mainContent.style.display = 'none';
+        }
+    });
+});
 
 // Initialize features when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {

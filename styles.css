@@ -37,8 +37,8 @@ body {
     display: flex;
     align-items: center;
     text-align: center;
-    <<<<<<< HEAD color: black;
-    =======color: white;
+    color: black;
+    color: white;
     background-attachment: fixed;
     position: relative;
 }
@@ -63,7 +63,7 @@ body {
     font-size: 1.2rem;
     margin-bottom: 2rem;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-    >>>>>>>7982f8b30c2989d14525fa6ad45e17db47b58be8
+
 }
 
 #hero .container {
@@ -118,7 +118,7 @@ body {
 }
 
 .btn.primary {
-    <<<<<<< HEAD background-color: #007bff;
+    background-color: #007bff;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -134,7 +134,7 @@ body {
 .btn.secondary {
     border: var(--secondary-color);
     color: black;
-    =======background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+    background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
     color: white;
     box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
 }
@@ -143,7 +143,6 @@ body {
     border: 2px solid var(--secondary-color);
     background: transparent;
     color: white;
-    >>>>>>>7982f8b30c2989d14525fa6ad45e17db47b58be8
 }
 
 /* Sidebar Styles */
@@ -155,7 +154,7 @@ body {
     width: 300px;
     background: linear-gradient(135deg, #1a2980, #26d0ce);
     backdrop-filter: blur(10px);
-    >>>>>>>7982f8b30c2989d14525fa6ad45e17db47b58be8 color: white;
+    color: white;
     transition: all 0.3s ease;
     z-index: 1200;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
