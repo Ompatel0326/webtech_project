@@ -93,6 +93,43 @@
     </div>
 
     <div class="main-content">
+        <!-- Hero Slider -->
+        <section id="hero-slider">
+            <div class="slider-container">
+                <div class="slide active">
+                    <div class="slide-content">
+                        <h1 class="animate-fadeIn">Welcome to <span class="gradient-text">Wealth Spectrum</span></h1>
+                        <p class="animate-fadeIn delay-1">Your trusted partner in wealth management</p>
+                        <div class="cta-buttons animate-fadeIn delay-2">
+                            <a href="#" class="btn primary" id="getStartedBtn">Get Started</a>
+                            <a href="#" class="btn secondary" id="viewPortfolioBtn">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide">
+                    <div class="slide-content">
+                        <h1>Strategic Investment Planning</h1>
+                        <p>Build your wealth with expert guidance</p>
+                        <div class="cta-buttons">
+                            <a href="#services" class="btn primary">Our Services</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide">
+                    <div class="slide-content">
+                        <h1>Market Analysis</h1>
+                        <p>Stay ahead with real-time insights</p>
+                        <div class="cta-buttons">
+                            <a href="#contact" class="btn primary">Get Started</a>
+                        </div>
+                    </div>
+                </div>
+                <button class="slider-btn prev">❮</button>
+                <button class="slider-btn next">❯</button>
+                <div class="slider-dots"></div>
+            </div>
+        </section>
+
         <div id="systemNotification" class="system-notification" style="display: none;">
             <div class="notification-content">
                 <span class="warning-icon">⚠️</span>
@@ -101,38 +138,13 @@
             <button class="close-notification" onclick="closeNotification()">×</button>
         </div>
 
-        <!-- Hero Section -->
-        <section id="hero" style="background-image: url('images/hero-bg.jpg')">
-<<<<<<< HEAD
-            <div class="container">
-                <<<<<<< HEAD <!-- Removed the content as per the request -->
-                    =======
-                    <h1 class="animate-fadeIn">Welcome to <span class="gradient-text">Wealth Spectrum</span></h1>
-                    <p class="animate-fadeIn delay-1">Your trusted partner in wealth management and investment solutions
-                    </p>
-                    <div class="cta-buttons animate-fadeIn delay-2">
-                        <a href="#" class="btn primary">Get Started</a>
-                        <a href="#" class="btn secondary">View Portfolio</a>
-                    </div>
-                    >>>>>>> 7982f8b30c2989d14525fa6ad45e17db47b58be8
-=======
-            <div class="container" id="heroContent">
-                <!-- Initial Content: Get Started Button -->
-                <a href="#" class="btn primary" onclick="openOptions()">Get Started</a>
->>>>>>> d2430b1892aee9a40878a47fabc7a3f1b5030cee
-            </div>
-        </section>
-
         <!-- About Section -->
         <section id="about">
             <div class="container">
-<<<<<<< HEAD
                 <div class="about-image">
                     <a href="https://ibb.co/tTWcVktb"><img src="https://i.ibb.co/XrvpcNgz/651fc3951e100.jpg"
                             alt="651fc3951e100" border="0"></a>
                 </div>
-=======
->>>>>>> d2430b1892aee9a40878a47fabc7a3f1b5030cee
                 <h2>About Us</h2>
                 <div class="mission-vision">
                     <div class="mission">
@@ -148,7 +160,7 @@
                     <h3>Our Team</h3>
                     <div class="team-grid">
                         <div class="team-member">
-                            <a href="https://imgbb.com/"><img src="https://i.ibb.co/DDmMXv2H/Screenshot-2025-04-16-123817.png" alt="Screenshot-2025-04-16-123817" border="0"></a>
+                            <img src="https://freeimage.host/i/3lOF0kg.jpg" alt="Om patel - CEO">
                             <h4>Om patel</h4>
                             <p>CEO & Founder</p>
                         </div>
@@ -191,9 +203,15 @@
                         <p>Strategic planning for your financial future</p>
                     </div>
                     <div class="service-card">
-                        <a href="https://imgbb.com/"><img src="https://i.ibb.co/HfHYn9d8/download.jpg" alt="download" border="0"></a>
+                        <img src="images/service4.jpg" alt="Market Insights">
                         <h3>Market Insights</h3>
                         <p>In-depth market analysis and trends</p>
+                    </div>
+                    <div class="service-card">
+                        <img src="images/buy-sell.jpg" alt="Buy/Sell">
+                        <h3>Buy/Sell</h3>
+                        <p>Seamlessly trade and manage your investments.</p>
+                        <button class="btn primary" onclick="handleBuySell()">Buy/Sell</button>
                     </div>
                 </div>
             </div>
@@ -258,34 +276,6 @@
                 </div>
             </div>
         </section>
-
-        <!-- Get Started Button -->
-        <a href="#" class="btn primary" onclick="openOptions()">Get Started</a>
-
-        <!-- New Section for Options -->
-        <section id="options" class="hidden">
-            <div class="container">
-                <h2>Choose an Option</h2>
-                <div class="options-grid">
-                    <div class="option-card">
-                        <h3>Stock</h3>
-                        <p>Manage your stock investments.</p>
-                    </div>
-                    <div class="option-card">
-                        <h3>Cash</h3>
-                        <p>Track your cash flow and savings.</p>
-                    </div>
-                    <div class="option-card">
-                        <h3>Asset</h3>
-                        <p>Monitor your assets and properties.</p>
-                    </div>
-                    <div class="option-card">
-                        <h3>Bonds</h3>
-                        <p>Invest in bonds for steady returns.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
     </div>
 
     <!-- Firebase Scripts -->
@@ -299,127 +289,11 @@
 
     <script src="app.js"></script>
     <script>
-        function openOptions() {
-            // Replace the content of the #hero section with the options
-            const heroContent = document.getElementById("heroContent");
-            heroContent.innerHTML = `
-                <h2>Choose an Option</h2>
-                <div class="options-grid">
-                    <div class="option-card">
-                        <h3>Stock</h3>
-                        <p>Manage your stock investments.</p>
-                    </div>
-                    <div class="option-card">
-                        <h3>Cash</h3>
-                        <p>Track your cash flow and savings.</p>
-                    </div>
-                    <div class="option-card">
-                        <h3>Asset</h3>
-                        <p>Monitor your assets and properties.</p>
-                    </div>
-                    <div class="option-card">
-                        <h3>Bonds</h3>
-                        <p>Invest in bonds for steady returns.</p>
-                    </div>
-                </div>
-            `;
-        }
+        console.log("Connected to server");
+        alert("Connected to server");
+        document.body.innerHTML += "Connected to server";
+        document.body.innerHTML += "<p>Connected to server</p>";
     </script>
 </body>
 
 </html>
-
-<style>
-.hidden {
-    display: none;
-}
-
-#options {
-    padding: 50px 20px;
-    background-color: #f9f9f9=;
-    text-align: center;
-}
-
-.options-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.option-card {
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.option-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-#hero {
-    background: url('images.png') no-repeat center center / cover;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: rgb(192, 42, 42);
-    position: relative;
-}
-
-#hero .container {
-    max-width: 800px;
-    text-align: center;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-#hero h2 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    color: black;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.options-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.option-card {
-    padding: 20px;
-    border: 1px solid #f0e8e8;
-    border-radius: 8px;
-    background-color: rgb(177, 169, 169);
-    color: black;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    text-align: center;
-}
-
-.option-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.option-card h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    color: #1875d1;
-}
-
-.option-card p {
-    font-size: 1rem;
-    color: #050303;
-}
-</style>

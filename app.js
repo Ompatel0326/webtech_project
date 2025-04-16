@@ -11,8 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Create dots
     slides.forEach((_, i) => {
         const dot = document.createElement('div');
-        dot.className = 'dot';
-        if (i === 0) dot.classList.add('active');
+        dot.className = `dot ${i === 0 ? 'active' : ''}`;
         dot.addEventListener('click', () => goToSlide(i));
         dots.appendChild(dot);
     });
@@ -809,88 +808,4 @@ async function updatePassword() {
         showNotification('Password updated successfully!', 'success');
         closePasswordModal();
 
-        // Show profile modal again
-        const userData = (await db.collection('users').doc(user.uid).get()).data();
-        showUserProfile(userData);
-    } catch (error) {
-        console.error('Error updating password:', error);
-        if (error.code === 'auth/wrong-password') {
-            showNotification('Current password is incorrect', 'error');
-        } else {
-            showNotification('Error updating password: ' + error.message, 'error');
-        }
-    }
-}
-
-// Logout Function
-function logout() {
-    auth.signOut().then(() => {
-        window.location.href = 'login.html';
-    }).catch((error) => {
-        console.error('Logout Error:', error);
-    });
-}
-
-// Add authentication check function
-function checkAuth() {
-    const user = auth.currentUser;
-    if (!user) {
-        window.location.href = 'login.html';
-        return false;
-    }
-    return true;
-}
-
-// Modify existing event listeners
-document.addEventListener('DOMContentLoaded', () => {
-    const getStartedBtn = document.querySelector('.cta-buttons .primary');
-    if (getStartedBtn) {
-        getStartedBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (!checkAuth()) return;
-        });
-    }
-
-    // Lock all service cards behind authentication
-    document.querySelectorAll('.service-card').forEach(card => {
-        card.addEventListener('click', (e) => {
-            if (!checkAuth()) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-        });
-    });
-
-    // Check auth state
-    auth.onAuthStateChanged(user => {
-        const mainContent = document.querySelector('.main-content');
-        if (user) {
-            if (mainContent) mainContent.style.display = 'block';
-            showDashboard(user);
-        } else {
-            if (mainContent) mainContent.style.display = 'none';
-        }
-    });
-});
-
-// Initialize features when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    // Check if user is logged in and on dashboard page
-    const dashboardSection = document.getElementById('dashboard');
-    if (dashboardSection && !dashboardSection.classList.contains('hidden')) {
-        initCharts();
-    }
-
-    // Check authentication state
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            showDashboard(user);
-        }
-    });
-});
-
-function handleBuySell() {
-    alert("Redirecting to the Buy/Sell platform...");
-    // Add your redirection logic here
-    window.location.href = "buy-sell.html";
-}
+// Show profile modal again
