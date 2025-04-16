@@ -14,7 +14,7 @@
 <body>
     <nav class="navbar">
         <div class="container">
-            <a href="#" class="logo">Wealth Spectrum</a>
+            <a href="#" class="logo">    Wealth Spectrum</a>
             <button class="nav-toggle" aria-label="Toggle navigation">
                 <span class="hamburger"></span>
             </button>
@@ -85,12 +85,7 @@
         <!-- Hero Section -->
         <section id="hero" style="background-image: url('images/hero-bg.jpg')">
             <div class="container">
-                <h1>Welcome to Wealth Spectrum</h1>
-                <p>Your trusted partner in wealth management and investment solutions</p>
-                <div class="cta-buttons">
-                    <a href="#" class="btn primary">Get Started</a>
-                    <a href="#" class="btn secondary">View Portfolio</a>
-                </div>
+                <!-- Removed the content as per the request -->
             </div>
         </section>
 
@@ -98,7 +93,7 @@
         <section id="about">
             <div class="container">
                 <div class="about-image">
-                    <a href="https://freeimage.host/"><img src="https://iili.io/3lOF0kg.png" alt="3lOF0kg.png" border="0"></a> 
+                    <a href="https://ibb.co/tTWcVktb"><img src="https://i.ibb.co/XrvpcNgz/651fc3951e100.jpg" alt="651fc3951e100" border="0"></a>
                 </div>
                 <h2>About Us</h2>
                 <div class="mission-vision">
@@ -154,6 +149,12 @@
                         <h3>Market Insights</h3>
                         <p>In-depth market analysis and trends</p>
                     </div>
+                    <div class="service-card">
+                        <img src="images/buy-sell.jpg" alt="Buy/Sell">
+                        <h3>Buy/Sell</h3>
+                        <p>Seamlessly trade and manage your investments.</p>
+                        <button class="btn primary" onclick="handleBuySell()">Buy/Sell</button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -167,7 +168,7 @@
                 <h2>Client Dashboard</h2>
                 <div class="dashboard-grid">
                     <div class="portfolio-summary">
-                        <h3>Portfolio Overview</h3>
+                        <h3>Portfolio </h3>
                         <canvas id="portfolioChart"></canvas>
                     </div>
                     <div class="performance-metrics">
@@ -194,11 +195,11 @@
                     <div class="contact-info">
                         <div class="info-item">
                             <h4>Address</h4>
-                            <p>123 Financial District, Business Bay</p>
+                            <p>e-block pdeu gandhinagar</p>
                         </div>
                         <div class="info-item">
                             <h4>Phone</h4>
-                            <p>+1 234 567 8900</p>
+                            <p>+917227022643</p>
                         </div>
                         <div class="info-item">
                             <h4>Email</h4>
@@ -206,7 +207,16 @@
                         </div>
                     </div>
                     <div id="map">
-                        <!-- Google Maps will be embedded here -->
+                        <!-- Embed Google Maps -->
+                        <iframe 
+                            src="https://maps.app.goo.gl/hPo4XNZdhRE77Wqe8" 
+                            width="100%" 
+                            height="400" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
                     </div>
                 </div>
             </div>
@@ -219,10 +229,16 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
 
     <!-- Google Maps -->
-    <script async src="https://maps.googleapis.com/maps/api/js?key=YOUR_ACTUAL_API_KEY&callback=initMap">
+    <script async src="https://maps.app.goo.gl/hPo4XNZdhRE77Wqe8">
     </script>
 
     <script src="app.js"></script>
+    <script>
+        console.log("Connected to server");
+        alert("Connected to server");
+        document.body.innerHTML += "Connected to server";
+        document.body.innerHTML += "<p>Connected to server</p>";
+    </script>
 </body>
 
 </html>

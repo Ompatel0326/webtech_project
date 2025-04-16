@@ -783,3 +783,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+function handleBuySell() {
+    alert("Redirecting to the Buy/Sell platform...");
+    // Add your redirection logic here
+    window.location.href = "buy-sell.html";
+}
